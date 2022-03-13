@@ -12,6 +12,5 @@ public class SkillDTO {
 	private int id;
 	private String nombre;
 	private int nivel;
-	private String persona;
 
 }

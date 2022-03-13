@@ -15,5 +15,9 @@ public class PersonaService {
 	public Persona findByNombre(String nombre) {
 		return this.personaRepo.findByNombre(nombre);
 	}
+	
+	public Persona savePersona(Persona persona) {
+		return this.personaRepo.save(persona);
+	}
 
 }

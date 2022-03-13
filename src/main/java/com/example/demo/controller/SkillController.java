@@ -22,6 +22,12 @@ import com.example.demo.service.SkillService;
 @CrossOrigin("/*")
 public class SkillController {
 	
+	//destinatario de la skill hardcodeado
+	//soluciones para saber a quier guardarle la skill
+	//mandar nombre en SkillDTO  (opción rapida)
+	//leer usuario desde el JWT (opción segura)
+	private final String NOMBRE="pepito";
+	
 	@Autowired
 	private SkillService skillService;
 	@Autowired
@@ -36,7 +42,7 @@ public class SkillController {
 	
 	@PostMapping("/skill/nueva")
 	public ResponseEntity<Skill> newSkill(@RequestBody SkillDTO skill){
-		Persona p = personaService.findByNombre(skill.getPersona());
+		Persona p = personaService.findByNombre(this.NOMBRE);
 		Skill s = new Skill();
 		s.setNivel(skill.getNivel());
 		s.setNombre(skill.getNombre());
@@ -46,10 +52,12 @@ public class SkillController {
 	}
 	
 	@PutMapping("/skill/editar")
-	public ResponseEntity<Skill> editSkill(@RequestBody Skill skill){
+	public ResponseEntity<Skill> editSkill(@RequestBody SkillDTO skill){
 		Skill s = this.skillService.findById(skill.getId());
+		Persona p = personaService.findByNombre(this.NOMBRE);
 		s.setNombre(skill.getNombre());
 		s.setNivel(skill.getNivel());
+		s.setPersona(p);
 		Skill newSkill = this.skillService.saveSkill(s);
 		return ResponseEntity.status(HttpStatus.CREATED).body(newSkill);
 	}
