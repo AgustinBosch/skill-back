@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.Data;
 
 @Entity
@@ -20,6 +22,7 @@ public class Persona {
 	private int id;
 	private String nombre;
 	@OneToMany(mappedBy = "persona", fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<Skill> skills;
 
 }
