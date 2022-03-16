@@ -20,8 +20,12 @@ public class SkillService {
 		return this.skillRepo.save(skill);
 	}
 	
-	public void deleteSkill(int id) {
-		this.skillRepo.deleteById(id);
+	public boolean deleteSkill(int id) {
+		if (this.skillRepo.existsById(id)){
+			this.skillRepo.deleteById(id);
+			return true;
+		}
+		return false;
 	}
 	
 }

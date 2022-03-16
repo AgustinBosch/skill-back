@@ -19,12 +19,14 @@ public class PersonaController {
 	@Autowired
 	private PersonaService personaService;
 	
+	// TODO manejar errores
 	@GetMapping("/persona/{nombre}")
 	public ResponseEntity<Persona> getPersona(@PathVariable String nombre) {
 		Persona p = this.personaService.findByNombre(nombre);
 		return ResponseEntity.ok(p);
 	}
 	
+	// TODO manejar errores
 	@PostMapping("/persona/nueva")
 	public ResponseEntity<Persona> newPersona(@RequestBody Persona persona) {
 		Persona p = this.personaService.savePersona(persona);

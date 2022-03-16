@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,61 +13,71 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Persona;
 import com.example.demo.model.Skill;
-import com.example.demo.model.SkillDTO;
-import com.example.demo.service.PersonaService;
 import com.example.demo.service.SkillService;
 
 @RestController
 @CrossOrigin("/*")
+@RequestMapping("/skill")
 public class SkillController {
 	
-	//destinatario de la skill hardcodeado
-	//soluciones para saber a quier guardarle la skill
-	//mandar nombre en SkillDTO  (opción rapida)
-	//leer usuario desde el JWT (opción segura)
-	private final String NOMBRE="pepito";
+	private final int PERSONA_ID=1; // fk hardcodeada, idealmente sacarla del JWT
 	
 	@Autowired
 	private SkillService skillService;
-	@Autowired
-	private PersonaService personaService;
 
-	@GetMapping("/skill/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<Skill> getSkill(@PathVariable int id){
 		Skill s = this.skillService.findById(id);
-		return ResponseEntity.ok(s);
+		if(s != null) {
+			return ResponseEntity.ok(s);			
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
 	
-	@PostMapping("/skill/nueva")
-	public ResponseEntity<Skill> newSkill(@RequestBody SkillDTO skill){
-		Persona p = personaService.findByNombre(this.NOMBRE);
-		Skill s = new Skill();
-		s.setNivel(skill.getNivel());
-		s.setNombre(skill.getNombre());
-		s.setPersona(p);
-		Skill newSkill = skillService.saveSkill(s);
+	@PostMapping("/nueva")
+	public ResponseEntity<Skill> newSkill(@Valid @RequestBody Skill skill, Errors errors){
+		
+		if (errors.hasErrors()) // devolver mensaje de los errores en lugar de solo un 400
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		
+		Persona ps = new Persona();
+		ps.setId(PERSONA_ID); // fk hardcodeada, idealmente sacarla del JWT
+		
+		skill.setPersona(ps);
+		Skill newSkill = skillService.saveSkill(skill);
+		
 		return ResponseEntity.status(HttpStatus.CREATED).body(newSkill);
 	}
 	
-	@PutMapping("/skill/editar")
-	public ResponseEntity<Skill> editSkill(@RequestBody SkillDTO skill){
+	@PutMapping("/editar")
+	public ResponseEntity<Skill> editSkill(@Valid @RequestBody Skill skill, Errors errors){
+		
+		if (errors.hasErrors()) // devolver mensaje de los errores en lugar de solo un 400
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		
 		Skill s = this.skillService.findById(skill.getId());
-		Persona p = personaService.findByNombre(this.NOMBRE);
+		
+		if(s == null)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		
 		s.setNombre(skill.getNombre());
 		s.setNivel(skill.getNivel());
-		s.setPersona(p);
 		Skill newSkill = this.skillService.saveSkill(s);
-		return ResponseEntity.status(HttpStatus.CREATED).body(newSkill);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(newSkill);
 	}
 	
-	@DeleteMapping("/skill/borrar/{id}")
-	public ResponseEntity<?> deleteSkill(@PathVariable int id){
-		this.skillService.deleteSkill(id);
-		return ResponseEntity.noContent().build();
+	@DeleteMapping("/borrar/{id}")
+	public ResponseEntity<Void> deleteSkill(@PathVariable int id){
+		if(this.skillService.deleteSkill(id)) {		
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
 	}
 }
