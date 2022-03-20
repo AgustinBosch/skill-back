@@ -21,7 +21,7 @@ import com.example.demo.model.Skill;
 import com.example.demo.service.SkillService;
 
 @RestController
-@CrossOrigin("/*")
+@CrossOrigin("*")
 @RequestMapping("/skill")
 public class SkillController {
 	

@@ -16,6 +16,10 @@ public class PersonaService {
 		return this.personaRepo.findByNombre(nombre);
 	}
 	
+	public Persona findById(int id) {
+		return this.personaRepo.findById(id).orElse(null);
+	}
+	
 	public Persona savePersona(Persona persona) {
 		return this.personaRepo.save(persona);
 	}

@@ -13,16 +13,16 @@ import com.example.demo.model.Persona;
 import com.example.demo.service.PersonaService;
 
 @RestController
-@CrossOrigin("/*")
+@CrossOrigin("*")
 public class PersonaController {
 	
 	@Autowired
 	private PersonaService personaService;
 	
 	// TODO manejar errores
-	@GetMapping("/persona/{nombre}")
-	public ResponseEntity<Persona> getPersona(@PathVariable String nombre) {
-		Persona p = this.personaService.findByNombre(nombre);
+	@GetMapping("/persona/{id}")
+	public ResponseEntity<Persona> getPersona(@PathVariable int id) {
+		Persona p = this.personaService.findById(id);
 		return ResponseEntity.ok(p);
 	}
 	
